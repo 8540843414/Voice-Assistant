@@ -82,7 +82,7 @@ function takeCommand(message) {
         let date = new Date().toLocaleString(undefined, { day: "numeric", month: "short" });
         speak("Today's date is " + date);
     } else {
-        let searchQuery = message.replace("shipra", "").replace("shifra", "").trim();
+        let searchQuery = message.replace("Supriya", "").replace("Supriya", "").trim();
         let finalText = "This is what I found on the internet regarding " + searchQuery;
         speak(finalText);
         window.open(`https://www.google.com/search?q=${searchQuery}`, "_blank");
