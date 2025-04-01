@@ -3,17 +3,23 @@ let content = document.querySelector("#content");
 let voice = document.querySelector("#voice");
 
 function speak(text) {
+    window.speechSynthesis.cancel(); // Ensure only one speech at a time
     let text_speak = new SpeechSynthesisUtterance(text);
     text_speak.rate = 1;
     text_speak.pitch = 1;
     text_speak.volume = 1;
-    text_speak.lang = "hi-GB";
+    text_speak.lang = "hi-IN"; // Corrected language
     window.speechSynthesis.speak(text_speak);
 }
 
+// Ensure voices are available
+window.speechSynthesis.onvoiceschanged = () => {
+    let voices = window.speechSynthesis.getVoices();
+    console.log("Available Voices:", voices);
+};
+
 function wishMe() {
-    let day = new Date();
-    let hours = day.getHours();
+    let hours = new Date().getHours();
     if (hours >= 0 && hours < 12) {
         speak("Good Morning Sir");
     } else if (hours >= 12 && hours < 16) {
@@ -23,24 +29,28 @@ function wishMe() {
     }
 }
 
+// Check if speech recognition is available
 let speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = new speechRecognition();
-recognition.onresult = (event) => {
-    let currentIndex = event.resultIndex;
-    let transcript = event.results[currentIndex][0].transcript;
-    content.innerText = transcript;
-    takeCommand(transcript.toLowerCase());
-};
+if (!speechRecognition) {
+    alert("Speech recognition is not supported in this browser.");
+} else {
+    let recognition = new speechRecognition();
+    recognition.onresult = (event) => {
+        let transcript = event.results[event.resultIndex][0].transcript;
+        content.innerText = transcript;
+        takeCommand(transcript.toLowerCase());
+    };
 
-btn.addEventListener("click", () => {
-    recognition.start();
-    voice.style.display = "block";
-    btn.style.display = "none";
-});
+    btn.addEventListener("click", () => {
+        recognition.start();
+        voice.style.display = "block";
+        btn.style.display = "none";
+    });
+}
 
 function openWebsite(url, siteName) {
     speak(`Opening ${siteName}...`);
-    window.open(url, "_blank"); // Ensures it opens in a new tab
+    window.open(url, "_blank");
 }
 
 function takeCommand(message) {
